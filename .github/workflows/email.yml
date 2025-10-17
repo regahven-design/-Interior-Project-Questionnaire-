@@ -1,0 +1,25 @@
+name: Send Email via EmailJS
+on:
+  push:
+    branches:
+      - main  # Trigger when you push to main
+
+jobs:
+  send_email:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Email through EmailJS
+        run: |
+          curl -X POST https://api.emailjs.com/api/v1.0/email/send \
+          -H 'Content-Type: application/json' \
+          -d '{
+            "service_id": "'"${{ secrets.EMAILJS_SERVICE_ID }}"'",
+            "template_id": "'"${{ secrets.EMAILJS_TEMPLATE_ID }}"'",
+            "user_id": "'"${{ secrets.EMAILJS_PUBLIC_KEY }}"'",
+            "template_params": {
+              "message": "🚀 A new commit was just pushed to the main branch on GitHub!",
+              "author": "${{ github.actor }}",
+              "commit_message": "${{ github.event.head_commit.message }}",
+              "repo": "${{ github.repository }}"
+            }
+          }'
